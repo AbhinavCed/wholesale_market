@@ -232,6 +232,8 @@ class Wholesale_market {
 
 		// condition to renders whole sale price at the cart page at product level and for all product ONLY for simple product 
 		$this->loader->add_filter('woocommerce_before_calculate_totals', $plugin_admin, 'min_qty_setting_is_achieved', 10, 1 );
+
+		// $this->loader->add_action('admin_notices', $plugin_admin, 'author_admin_notice');
 	}
 
 	/**

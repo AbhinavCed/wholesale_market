@@ -309,10 +309,13 @@ class Wholesale_market_Admin {
 		
 		foreach ($result as $key => $value) {
 
-			if ($get_i_radio_min_qty == 'yes' && $get_i_checkbox_minimum_qty == 'yes') {
+			if ($get_i_radio_min_qty == 'yes' && $get_i_checkbox_minimum_qty == 'yes') 
+			{
 				$args = array(
 				'id' => 'custom_text_field_mimimum_qty',
 				'label' => __( '<b> Minimum Quantity </b>' ),
+				'type' => 'number',
+				'custom_attributes' => array('min' => '0'),
 				'desc_tip' => true,
 				'value' => isset($value['minimum_qty']) ? $value['minimum_qty'] : '',
 				'description' => 'Enter Minimum Quantity'
@@ -337,9 +340,17 @@ class Wholesale_market_Admin {
 		$wholesale_price = isset( $_POST['custom_text_field_wholesale_price'] ) ? $_POST['custom_text_field_wholesale_price'] : '';
 		$minimum_qty     = isset( $_POST['custom_text_field_mimimum_qty'] ) ? $_POST['custom_text_field_mimimum_qty'] : '';
 
-		$value = array('wholesale_price' => $wholesale_price, 'minimum_qty' => $minimum_qty);
-		$product->update_meta_data( 'custom_text_field_values', $value );
-		$product->save();
+		global $post;
+		$post_id = $post->ID;
+		$regular_price = get_post_meta($post_id, '_regular_price', true);
+		$sale_price = get_post_meta($post_id, '_sale_price', true);
+		
+		if($regular_price > $sale_price && $regular_price > $wholesale_price)
+		{
+			$value = array('wholesale_price' => $wholesale_price, 'minimum_qty' => $minimum_qty);
+			$product->update_meta_data( 'custom_text_field_values', $value );
+			$product->save();
+		}
 	}
 	
 
@@ -392,10 +403,12 @@ class Wholesale_market_Admin {
 	 * @param  mixed $i
 	 * @return void
 	 */
-	function save_custom_field_minqty_in_variation( $variation_id, $i ) { 
+	function save_custom_field_minqty_in_variation( $variation_id, $i ) 
+	{ 
 		$custom_field = $_POST['custom_field_minqty_in_variation'][$i];
-		if ( isset( $custom_field ) ) {
-update_post_meta( $variation_id, 'custom_field_minqty_in_variation', esc_attr( $custom_field ) );
+		if ( isset( $custom_field ) ) 
+		{
+			update_post_meta( $variation_id, 'custom_field_minqty_in_variation', esc_attr( $custom_field ) );
 		}
 	}
 
@@ -424,13 +437,14 @@ update_post_meta( $variation_id, 'custom_field_minqty_in_variation', esc_attr( $
 		 * @param  mixed $i
 		 * @return void
 		*/
-	function save_custom_field_wholesale_in_variation( $variation_id, $i ) { 
-		$custom_field = $_POST['custom_field_wholesale_in_variation'][$i];
-		if ( isset( $custom_field ) ) {
-update_post_meta( $variation_id, 'custom_field_wholesale_in_variation', esc_attr( $custom_field ) );
+		function save_custom_field_wholesale_in_variation( $variation_id, $i ) 
+		{ 
+			$custom_field = $_POST['custom_field_wholesale_in_variation'][$i];
+			if ( isset( $custom_field ) ) 
+			{
+				update_post_meta( $variation_id, 'custom_field_wholesale_in_variation', esc_attr( $custom_field ) );
+			}
 		}
-	}
-
 
 		/**
 		 * show_add_wholesale_field_variation_data
@@ -439,10 +453,11 @@ update_post_meta( $variation_id, 'custom_field_wholesale_in_variation', esc_attr
 		 * @param  mixed $variations
 		 * @return void
 		*/
-	function show_wholesale_field_variation_data( $variations ) { 
-		$variations['custom_field'] = '<div class="woocommerce_custom_field">Custom Field: <span>' . get_post_meta( $variations[ 'variation_id' ], 'custom_field_wholesale_in_variation', true ) . '</span></div>';
-		return $variations;
-	}
+		function show_wholesale_field_variation_data( $variations ) 
+		{ 
+			$variations['custom_field'] = '<div class="woocommerce_custom_field">Custom Field: <span>' . get_post_meta( $variations[ 'variation_id' ], 'custom_field_wholesale_in_variation', true ) . '</span></div>';
+			return $variations;
+		}
 
 	// ------- Same as above 2 bt for different field (Wholesale Price) -----------
 
@@ -514,10 +529,12 @@ update_post_meta( $variation_id, 'custom_field_wholesale_in_variation', esc_attr
 	 * @param  mixed $user_id
 	 * @return void
 	*/
-	function save_checkbox_on_register_page_request_for_wholeseller( $user_id ) {
+	function save_checkbox_on_register_page_request_for_wholeseller( $user_id ) 
+	{
 		$get_value = $_POST['make_me_wholeseller'];
-		if ( isset( $get_value ) ) {
-update_user_meta( $user_id, 'save_checkbok_value_registerpage', esc_attr( $get_value ) );
+		if ( isset( $get_value ) ) 
+		{
+			update_user_meta( $user_id, 'save_checkbok_value_registerpage', esc_attr( $get_value ) );
 		}
 	}
 
@@ -813,7 +830,8 @@ update_user_meta( $user_id, 'save_checkbok_value_registerpage', esc_attr( $get_v
 	 * @param  mixed $cart_data
 	 * @return void
 	*/
-	public function min_qty_setting_is_achieved( $cart_data ) {
+	public function min_qty_setting_is_achieved( $cart_data ) 
+	{
 		foreach ($cart_data->get_cart() as $cart => $data) {
 			$prod_type = $data['data']->get_type();
 
@@ -876,4 +894,20 @@ update_user_meta( $user_id, 'save_checkbok_value_registerpage', esc_attr( $get_v
 		}
 		return $cart_data;
 	}
+
+
+	// function author_admin_notice()
+	// {
+	// 	global $pagenow;
+	// 	if ( $pagenow == 'index.php' ) 
+	// 	{
+	// 		$user = wp_get_current_user();
+	// 		if ( in_array( 'author', (array) $user->roles ) ) 
+	// 		{
+	// 			echo '<div class="notice notice-info is-dismissible">
+	// 			<p>Click on <a href="edit.php">Posts</a> to start writing.</p>
+	// 			</div>';
+	// 		}
+	// 	}
+	// }
 }
