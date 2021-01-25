@@ -18,15 +18,15 @@
  *
  * @package    Wholesale_market
  * @subpackage Wholesale_market/public
- * @author     Abhinav <abhinavyadav@cedcoss.com>
+ * author     Abhinav <abhinavyadav@cedcoss.com>
  */
-class Wholesale_market_Public {
+class Wholesale_Market_Public {
 
 	/**
 	 * The ID of this plugin.
 	 *
 	 * @since    1.0.0
-	 * @access   private
+	 * access   private
 	 * @var      string    $plugin_name    The ID of this plugin.
 	 */
 	private $plugin_name;
@@ -35,7 +35,7 @@ class Wholesale_market_Public {
 	 * The version of this plugin.
 	 *
 	 * @since    1.0.0
-	 * @access   private
+	 * access   private
 	 * @var      string    $version    The current version of this plugin.
 	 */
 	private $version;

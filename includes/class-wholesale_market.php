@@ -25,16 +25,16 @@
  * @since      1.0.0
  * @package    Wholesale_market
  * @subpackage Wholesale_market/includes
- * @author     Abhinav <abhinavyadav@cedcoss.com>
+ * author     Abhinav <abhinavyadav@cedcoss.com>
  */
-class Wholesale_market {
+class Wholesale_Market {
 
 	/**
 	 * The loader that's responsible for maintaining and registering all hooks that power
 	 * the plugin.
 	 *
 	 * @since    1.0.0
-	 * @access   protected
+	 * access   protected
 	 * @var      Wholesale_market_Loader    $loader    Maintains and registers all hooks for the plugin.
 	 */
 	protected $loader;
@@ -43,7 +43,7 @@ class Wholesale_market {
 	 * The unique identifier of this plugin.
 	 *
 	 * @since    1.0.0
-	 * @access   protected
+	 * access   protected
 	 * @var      string    $plugin_name    The string used to uniquely identify this plugin.
 	 */
 	protected $plugin_name;
@@ -52,7 +52,7 @@ class Wholesale_market {
 	 * The current version of the plugin.
 	 *
 	 * @since    1.0.0
-	 * @access   protected
+	 * access   protected
 	 * @var      string    $version    The current version of the plugin.
 	 */
 	protected $version;
@@ -95,7 +95,7 @@ class Wholesale_market {
 	 * with WordPress.
 	 *
 	 * @since    1.0.0
-	 * @access   private
+	 * access   private
 	 */
 	private function load_dependencies() {
 
@@ -133,7 +133,7 @@ class Wholesale_market {
 	 * with WordPress.
 	 *
 	 * @since    1.0.0
-	 * @access   private
+	 * access   private
 	 */
 	private function set_locale() {
 
@@ -148,7 +148,7 @@ class Wholesale_market {
 	 * of the plugin.
 	 *
 	 * @since    1.0.0
-	 * @access   private
+	 * access   private
 	 */
 	private function define_admin_hooks() { 
 		$plugin_admin = new Wholesale_market_Admin( $this->get_plugin_name(), $this->get_version() );
@@ -241,7 +241,7 @@ class Wholesale_market {
 	 * of the plugin.
 	 *
 	 * @since    1.0.0
-	 * @access   private
+	 * access   private
 	 */
 	private function define_public_hooks() {
 

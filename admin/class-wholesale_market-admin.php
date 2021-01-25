@@ -18,15 +18,15 @@
  *
  * @package    Wholesale_market
  * @subpackage Wholesale_market/admin
- * @author     Abhinav <abhinavyadav@cedcoss.com>
+ * author     Abhinav <abhinavyadav@cedcoss.com>
  */
-class Wholesale_market_Admin {
+class Wholesale_Market_Admin {
 
 	/**
 	 * The ID of this plugin.
 	 *
 	 * @since    1.0.0
-	 * @access   private
+	 * access   private
 	 * @var      string    $plugin_name    The ID of this plugin.
 	 */
 	private $plugin_name;
@@ -35,7 +35,7 @@ class Wholesale_market_Admin {
 	 * The version of this plugin.
 	 *
 	 * @since    1.0.0
-	 * @access   private
+	 * access   private
 	 * @var      string    $version    The current version of this plugin.
 	 */
 	private $version;
@@ -99,7 +99,7 @@ class Wholesale_market_Admin {
 	
 
 	/**
-	 * add_settings_tab
+	 * Add_settings_tab
 	 * this is to create a Tab Named ''Whole Sale'' with ID "wholesale" in WooCommerce setting
 	 *
 	 * @param  mixed $settings_tabs
@@ -112,7 +112,7 @@ class Wholesale_market_Admin {
 
 		
 	/**
-	 * add_sections_in_wholesale_setting_tab
+	 * Add_sections_in_wholesale_setting_tab
 	 * this is to create a Section Named 'General' AND  Inventory' with ID "wholesale" in WooCommerce setting
 	 *
 	 * @return void
@@ -124,21 +124,22 @@ class Wholesale_market_Admin {
 			'inventory' => __( 'Inventory' ) 
 		);
 		
-		if ( empty( $sections ) || 1 === sizeof( $sections ) ) {
+		if ( empty( $sections ) || 1 === count( $sections ) ) {
 			return;
 		}
 
 		echo '<ul class="subsubsub">';
 		$array_keys = array_keys( $sections );
 		foreach ( $sections as $id => $label ) {
-			echo '<li><a href="' . admin_url( 'admin.php?page=wc-settings&tab=wholesale&section=' . sanitize_title( $id ) ) . '" class="' . ( $current_section == $id ? 'current' : '' ) . '">' . $label . '</a> ' . ( end( $array_keys ) == $id ? '' : '|' ) . ' </li>';
+			echo '<li><a href="' . 
+			esc_url(admin_url( 'admin.php?page=wc-settings&tab=wholesale&section=' . sanitize_title( $id ) ) . '" class="' . ( $current_section == $id ? 'current' : '' ) . '">' . $label . '</a> ' . ( end( $array_keys ) == $id ? '' : '|' )) . ' </li>';
 		}
 		echo '</ul><br class="clear" />';
 	}
 
 
 	/**
-	 * get_settings
+	 * Get_settings
 	 * this is the function that is called by the output()..!
 	*/
 	public function get_settings( $current_section = '' ) { 
@@ -233,7 +234,7 @@ class Wholesale_market_Admin {
 	
 
 	/**
-	 * output
+	 * Output
 	 * this function is calling above function to display
 	 * To output these settings under the right section, we’ll need a function to output them.
 	 * The WooCommerce settings API will give us a lift here: WC_Admin_Settings::output_fields( $settings )
@@ -249,7 +250,7 @@ class Wholesale_market_Admin {
 	
 
 	/**
-	 * save
+	 * Save
 	 * we’ll need to save our settings based on which section is being saved,
 	 * so that we can properly retrieve them for use elsewhere in our plugin.
 	 * WooCommerce has a helper for this as well: WC_Admin_Settings::save_fields( $settings );
@@ -265,42 +266,57 @@ class Wholesale_market_Admin {
 
 	
 	/**
-	 * create_wholesale_price_field_backend_products
+	 * Create_wholesale_price_field_backend_products
 	 * this created a field for simple product at the backend named Wholesale price
 	 *
 	 * @return void
 	*/
-	function create_wholesale_price_field_backend_products() {
+	public function create_wholesale_price_field_backend_products() {
 		$get_g_checkbox_wholesale_price = get_option('g_checkbox_wholesale_price');
 
 		$get_id = get_the_ID();
 		$result = get_post_meta($get_id, 'custom_text_field_values', false);
 
 		foreach ($result as $key => $value) {
+			if ( 'yes' == $get_g_checkbox_wholesale_price ) {
+				$args = array(
+				'id' => 'custom_text_field_wholesale_price',
+				'label' => __( '<b> Wholesale Price (₹) </b>' ),
+				'desc_tip' => true,
+				'value' => isset($value['wholesale_price']) ? $value['wholesale_price'] : '' ,
+				'description' => 'Enter Wholesale Price'
+				);
+				woocommerce_wp_text_input( $args );
 
-			if ($get_g_checkbox_wholesale_price == 'yes') {
+				woocommerce_wp_text_input( 
+				array(
+				'id' => 'nonce',
+				'type' => 'hidden',
+				'label' => __('nonce'),
+				'value' => wp_create_nonce('first_nonce'),
+				));
 			}
 		}
-		{
-			$args = array(
-			'id' => 'custom_text_field_wholesale_price',
-			'label' => __( '<b> Wholesale Price (₹) </b>' ),
-			'desc_tip' => true,
-			'value' => isset($value['wholesale_price']) ? $value['wholesale_price'] : '' ,
-			'description' => 'Enter Wholesale Price'
-			);
-			woocommerce_wp_text_input( $args );
-		}
+		// {
+		// 	$args = array(
+		// 	'id' => 'custom_text_field_wholesale_price',
+		// 	'label' => __( '<b> Wholesale Price (₹) </b>' ),
+		// 	'desc_tip' => true,
+		// 	'value' => isset($value['wholesale_price']) ? $value['wholesale_price'] : '' ,
+		// 	'description' => 'Enter Wholesale Price'
+		// 	);
+		// 	woocommerce_wp_text_input( $args );
+		// }
 	}
 
 	
 	/**
-	 * create_minimum_qty_field_backend_products
+	 * Create_minimum_qty_field_backend_products
 	 * this creates a field for simple product at the backend named Minimum Quantity
 	 *
 	 * @return void
 	*/
-	function create_minimum_qty_field_backend_products() { 
+	public function create_minimum_qty_field_backend_products() { 
 		$get_i_radio_min_qty        = get_option('i_radio_min_qty');
 		$get_i_checkbox_minimum_qty = get_option('i_checkbox_minimum_qty');
 
@@ -309,8 +325,7 @@ class Wholesale_market_Admin {
 		
 		foreach ($result as $key => $value) {
 
-			if ($get_i_radio_min_qty == 'yes' && $get_i_checkbox_minimum_qty == 'yes') 
-			{
+			if ( 'yes' == $get_i_radio_min_qty && 'yes'== $get_i_checkbox_minimum_qty ) {
 				$args = array(
 				'id' => 'custom_text_field_mimimum_qty',
 				'label' => __( '<b> Minimum Quantity </b>' ),
@@ -321,54 +336,63 @@ class Wholesale_market_Admin {
 				'description' => 'Enter Minimum Quantity'
 				);
 				woocommerce_wp_text_input( $args );
+
+				woocommerce_wp_text_input( 
+				array(
+					'id' => 'nonce',
+					'type' => 'hidden',
+					'label' => __('nonce'),
+					'value' => wp_create_nonce('first_nonce'),
+				));
 			}
 		}
 	}
 
 	
 	/**
-	 * save_both_custom_field_values
-	 * this function save the custom field values of simple product i.e wholesale price and minimum quantity
-	 * by key 'custom_text_field_values' in postmeta table
+	 * Save_both_custom_field_values
+	 * This function save the custom field values of simple product i.e wholesale price and minimum quantity
+	 * By key 'custom_text_field_values' in postmeta table
 	 *
 	 * @param  mixed $post_id
 	 * @return void
 	*/
-	function save_both_custom_field_values( $post_id ) { 
-		$product = wc_get_product( $post_id );
-		
-		$wholesale_price = isset( $_POST['custom_text_field_wholesale_price'] ) ? $_POST['custom_text_field_wholesale_price'] : '';
-		$minimum_qty     = isset( $_POST['custom_text_field_mimimum_qty'] ) ? $_POST['custom_text_field_mimimum_qty'] : '';
+	public function save_both_custom_field_values( $post_id ) {
+		if (isset( $_POST['first_nonce'] ) && wp_verify_nonce( sanitize_text_field($_POST['first_nonce'], 'first_nonce' ) )) {
+			$product = wc_get_product( $post_id );
+			
+			$wholesale_price = isset( $_POST['custom_text_field_wholesale_price'] ) ? sanitize_text_field($_POST['custom_text_field_wholesale_price']) : '';
+			$minimum_qty     = isset( $_POST['custom_text_field_mimimum_qty'] ) ? sanitize_text_field($_POST['custom_text_field_mimimum_qty']) : '';
 
-		global $post;
-		$post_id = $post->ID;
-		$regular_price = get_post_meta($post_id, '_regular_price', true);
-		$sale_price = get_post_meta($post_id, '_sale_price', true);
-		
-		if($regular_price > $sale_price && $regular_price > $wholesale_price)
-		{
-			$value = array('wholesale_price' => $wholesale_price, 'minimum_qty' => $minimum_qty);
-			$product->update_meta_data( 'custom_text_field_values', $value );
-			$product->save();
+			global $post;
+			$post_id       = $post->ID;
+			$regular_price = get_post_meta($post_id, '_regular_price', true);
+			$sale_price    = get_post_meta($post_id, '_sale_price', true);
+			
+			if ($regular_price > $sale_price && $regular_price > $wholesale_price) {
+				$value = array('wholesale_price' => $wholesale_price, 'minimum_qty' => $minimum_qty);
+				$product->update_meta_data( 'custom_text_field_values', $value );
+				$product->save();
+			}
 		}
 	}
 	
 
 	/**
-	 * new_modify_user_table
+	 * New_modify_user_table
 	 * Add a Wholesale Customer column on User listing page with a approve button to make wholesale user.
 	 *
 	 * @param  mixed $column
 	 * @return void
 	*/
-	function create_new_user_table( $column ) { 
+	public function create_new_user_table( $column ) { 
 		$column['wholesale_customer'] = 'Is Wholesale Customer';
 		return $column;
 	}
 
 		
 	/**
-	 * create_custom_field_backend_variation_products
+	 * Create_custom_field_backend_variation_products
 	 * Create a field for VARIABLE PRODUCT at the backend named wholesale and minimum quantity
 	 *
 	 * @param  mixed $loop
@@ -376,7 +400,7 @@ class Wholesale_market_Admin {
 	 * @param  mixed $variation
 	 * @return void
 	*/
-	function create_custom_field_backend_variation_products( $loop, $variation_data, $variation ) { 
+	public function create_custom_field_backend_variation_products( $loop, $variation_data, $variation ) { 
 		$args1 = array(
 		'id' => 'custom_field_wholesale_in_variation[' . $loop . ']',
 		'label' => __( '<b> Wholesale Price (₹) </b>' ),
@@ -392,35 +416,43 @@ class Wholesale_market_Admin {
 		'description' => 'Enter Minimum Quantitiy'
 		);
 		woocommerce_wp_text_input( $args2 );
+
+		woocommerce_wp_text_input( 
+			array(
+			'id' => 'nonce',
+			'type' => 'hidden',
+			'label' => __('nonce'),
+			'value' => wp_create_nonce('first_nonce'),
+		));
 	}
 
 	
 	/**
-	 * save_custom_field_minqty_in_variation
+	 * Save_custom_field_minqty_in_variation
 	 * Save a field value for VARIABLE PRODUCT at the backend named Minimum Quantity
 	 *
 	 * @param  mixed $variation_id
 	 * @param  mixed $i
 	 * @return void
 	 */
-	function save_custom_field_minqty_in_variation( $variation_id, $i ) 
-	{ 
-		$custom_field = $_POST['custom_field_minqty_in_variation'][$i];
-		if ( isset( $custom_field ) ) 
-		{
-			update_post_meta( $variation_id, 'custom_field_minqty_in_variation', esc_attr( $custom_field ) );
+	public function save_custom_field_minqty_in_variation( $variation_id, $i ) {
+		if (isset( $_POST['first_nonce'] ) && wp_verify_nonce( sanitize_text_field($_POST['first_nonce'], 'first_nonce' ) )) {
+			$custom_field = isset( $_POST['custom_field_minqty_in_variation'][$i] ) ? sanitize_text_field($_POST['custom_field_minqty_in_variation'][$i]) : '';
+			if ( isset( $custom_field ) ) {
+				update_post_meta( $variation_id, 'custom_field_minqty_in_variation', esc_attr( $custom_field ) );
+			}
 		}
 	}
 
 		
 	/**
-	 * show_add_minqty_field_variation_data
+	 * Show_add_minqty_field_variation_data
 	 * Display back a field value for VARIABLE PRODUCT at the backend named Minimum Quantity
 	 *
 	 * @param  mixed $variations
 	 * @return void
 	 */
-	function show_minqty_field_variation_data( $variations ) { 
+	public function show_minqty_field_variation_data( $variations ) { 
 		$variations['custom_field'] = '<div class="woocommerce_custom_field">Custom Field: <span>' . get_post_meta( $variations[ 'variation_id' ], 'custom_field_minqty_in_variation', true ) . '</span></div>';
 		return $variations;
 	}
@@ -430,53 +462,52 @@ class Wholesale_market_Admin {
 	// ------- Same as above 2 bt for different field (Wholesale Price) -----------
 
 		/**
-		 * save_custom_field_wholesale_in_variation
+		 * Save_custom_field_wholesale_in_variation
 		 * Save a field value for VARIABLE PRODUCT at the backend named Wholesale Price
 		 *
 		 * @param  mixed $variation_id
 		 * @param  mixed $i
 		 * @return void
 		*/
-		function save_custom_field_wholesale_in_variation( $variation_id, $i ) 
-		{ 
-			$custom_field = $_POST['custom_field_wholesale_in_variation'][$i];
-			if ( isset( $custom_field ) ) 
-			{
+	public function save_custom_field_wholesale_in_variation( $variation_id, $i ) { 
+		if (isset( $_POST['first_nonce'] ) && wp_verify_nonce( sanitize_text_field($_POST['first_nonce'], 'first_nonce' ) )) {
+			$custom_field = isset( $_POST['custom_field_wholesale_in_variation'][$i] ) ? sanitize_text_field($_POST['custom_field_wholesale_in_variation'][$i]) : '';
+			if ( isset( $custom_field ) ) {
 				update_post_meta( $variation_id, 'custom_field_wholesale_in_variation', esc_attr( $custom_field ) );
 			}
 		}
+	}
 
 		/**
-		 * show_add_wholesale_field_variation_data
+		 * Show_add_wholesale_field_variation_data
 		 * Display back a field value for VARIABLE PRODUCT at the backend named Wholesale Price
 		 *
 		 * @param  mixed $variations
 		 * @return void
 		*/
-		function show_wholesale_field_variation_data( $variations ) 
-		{ 
-			$variations['custom_field'] = '<div class="woocommerce_custom_field">Custom Field: <span>' . get_post_meta( $variations[ 'variation_id' ], 'custom_field_wholesale_in_variation', true ) . '</span></div>';
-			return $variations;
-		}
+	public function show_wholesale_field_variation_data( $variations ) {
+		$variations['custom_field'] = '<div class="woocommerce_custom_field">Custom Field: <span>' . get_post_meta( $variations[ 'variation_id' ], 'custom_field_wholesale_in_variation', true ) . '</span></div>';
+		return $variations;
+	}
 
 	// ------- Same as above 2 bt for different field (Wholesale Price) -----------
 
 	
 	/**
-	 * make_normal_customer_a_wholesale_customer
-	 * this to to create a checkbox in edit user for all user to make_normal_customer_a_wholesale_customer
+	 * Make_normal_customer_a_wholesale_customer
+	 * This to to create a checkbox in edit user for all user to make_normal_customer_a_wholesale_customer
 	 *
 	 * @return void
 	*/
-	function make_normal_customer_a_wholesale_customer() {
+	public function make_normal_customer_a_wholesale_customer() {
 		?>
 			<tr class="user-syntax-highlighting-wrap">
-				<th scope="row"><?php _e( 'Make User Wholeseller' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Make User Wholeseller' ); ?></th>
 				<td>
 					<label for="change_user_role_to_wholeseller">
 						<input name="change_user_role_to_wholeseller" type="checkbox" id="change_user_role_to_wholeseller"
 							value="normal_user_to_wholeseller" />
-						<?php _e( 'Enabling this will make any normal customer a wholesale customer' ); ?>
+						<?php esc_html_e( 'Enabling this will make any normal customer a wholesale customer' ); ?>
 					</label>
 				</td>
 			</tr>
@@ -485,12 +516,12 @@ class Wholesale_market_Admin {
 
 	
 	/**
-	 * to_add_custom_role_wholeseller
-	 * this is to add a new role "Wholeseller" in the User admin menu
+	 * To_add_custom_role_wholeseller
+	 * This is to add a new role "Wholeseller" in the User admin menu
 	 *
 	 * @return void
 	*/
-	function to_add_custom_role_wholeseller() {
+	public function to_add_custom_role_wholeseller() {
 		$result = add_role( 'wholeseller', (
 			'Wholeseller' ),
 			array(
@@ -505,12 +536,12 @@ class Wholesale_market_Admin {
 
 	
 	/**
-	 * create_checkbox_on_register_page_request_for_wholeseller
-	 * this is to create_checkbox_on_register_page_request_for_wholeseller
+	 * Create_checkbox_on_register_page_request_for_wholeseller
+	 * This is to create_checkbox_on_register_page_request_for_wholeseller
 	 *
 	 * @return void
 	*/
-	function create_checkbox_on_register_page_request_for_wholeseller() {
+	public function create_checkbox_on_register_page_request_for_wholeseller() {
 		?>
 			<p class="form-row">
 				<label class="make_me_wholeseller">
@@ -523,36 +554,36 @@ class Wholesale_market_Admin {
 	
 
 	/**
-	 * save_checkbox_on_register_page_request_for_wholeseller
-	 * this is to save_checkbox_on_register_page_request_for_wholeseller
+	 * Save_checkbox_on_register_page_request_for_wholeseller
+	 * This is to save_checkbox_on_register_page_request_for_wholeseller
 	 *
 	 * @param  mixed $user_id
 	 * @return void
 	*/
-	function save_checkbox_on_register_page_request_for_wholeseller( $user_id ) 
-	{
-		$get_value = $_POST['make_me_wholeseller'];
-		if ( isset( $get_value ) ) 
-		{
-			update_user_meta( $user_id, 'save_checkbok_value_registerpage', esc_attr( $get_value ) );
+	public function save_checkbox_on_register_page_request_for_wholeseller( $user_id ) { 
+		if (isset( $_POST['first_nonce'] ) && wp_verify_nonce( sanitize_text_field($_POST['first_nonce'], 'first_nonce' ) )) {
+			$get_value = isset($_POST['make_me_wholeseller']) ? sanitize_text_field($_POST['make_me_wholeseller']) : '';
+			if ( isset( $get_value ) ) {
+				update_user_meta( $user_id, 'save_checkbok_value_registerpage', esc_attr( $get_value ) );
+			}
 		}
 	}
 
 	
 	/**
-	 * bbloomer_add_new_user_column_content
-	 * this is to show button on the user wp_list_table under Is Wholesale Customer column
+	 * Bbloomer_add_new_user_column_content
+	 * This is to show button on the user wp_list_table under Is Wholesale Customer column
 	 *
 	 * @param  mixed $value
 	 * @param  mixed $column_name
 	 * @param  mixed $user_id
 	 * @return void
 	*/
-	function to_show_button_wholeseller( $value, $column_name, $user_id ) { 
+	public function to_show_button_wholeseller( $value, $column_name, $user_id ) { 
 		$get_value = get_user_meta( $user_id, 'save_checkbok_value_registerpage', true);
 
-		if ($column_name == 'wholesale_customer' && $get_value == 'yes') {
-			if ( $column_name == 'wholesale_customer' ) {
+		if ( 'wholesale_customer' == $column_name && 'yes' == $get_value ) {
+			if ( 'wholesale_customer' == $column_name ) {
 			return '<form method="POST"> <input type="submit" name="submit_the_button" id="submit_the_button" value="Make Wholeseller"> 
 			<input type="hidden" name="user_id" value="' . $user_id . '"> </form>';
 			}
@@ -563,14 +594,14 @@ class Wholesale_market_Admin {
 
 	
 	/**
-	 * profile_update_user_role
-	 * this to change the role of the user from any role to "wholeseller"
+	 * Profile_update_user_role
+	 * This to change the role of the user from any role to "wholeseller"
 	 *
 	 * @return void
 	*/
-	function profile_update_user_role() { 
+	public function profile_update_user_role() { 
 		if (isset($_REQUEST['submit_the_button'])) {
-			$user_id = $_REQUEST['user_id'];
+			$user_id = isset($_REQUEST['user_id']) ? sanitize_text_field($_REQUEST['user_id']) : '';
 
 			$var = new WP_User( $user_id );
 
@@ -584,8 +615,8 @@ class Wholesale_market_Admin {
 
 	
 	/**
-	 * display_wholesale_price
-	 * renders whole sale price at evry simple product at shop page When
+	 * Display_wholesale_price
+	 * Renders whole sale price at evry simple product at shop page When
 	 * 1 it is simple product
 	 * 2 when "Wholesale Price Setting" check box AND display to all customer radio is Checked('yes)
 	 * IN else 
@@ -595,20 +626,20 @@ class Wholesale_market_Admin {
 	 *
 	 * @return void
 	*/
-	function display_wholesale_price_in_shop_page() {
+	public function display_wholesale_price_in_shop_page() {
 		$get_i_radio_min_qty = get_option('i_radio_min_qty');
 		$_get_radio_price    = get_option('g_radio_dislpay_price_to');
 		
-		if ($get_i_radio_min_qty == 'yes' && $_get_radio_price == 'yes') {
+		if ( 'yes' == $get_i_radio_min_qty && 'yes' == $_get_radio_price ) {
 			global $product;
 			$id    = $product->get_id();
 			$items = $product->get_type();
 
 			if ( is_user_logged_in() ) {
-				if ( $items == 'simple') {
+				if ( 'simple' == $items ) {
 					$result = get_post_meta($id, 'custom_text_field_values', true);
 					$show   = isset($result['wholesale_price']) ? $result['wholesale_price'] : '';
-					echo '<div class="product-meta">Wholesale Price: ' . $show . '</div>';
+					echo '<div class="product-meta">Wholesale Price: ' . esc_url($show) . '</div>';
 				}
 			}
 		} else {
@@ -618,16 +649,16 @@ class Wholesale_market_Admin {
 
 			foreach ($roles as $value) {
 				if ( is_user_logged_in() ) { 		// check if there is a logged in user 
-					if ( $_get_radio_price == 'no' ) {
-						if ( $value == 'wholeseller') {
+					if ( 'no' == $_get_radio_price ) {
+						if ( 'wholeseller' == $value ) {
 							global $product;
 							$id    = $product->get_id();
 							$items = $product->get_type();
 
-							if ( $items == 'simple') {
+							if ( 'simple' == $items ) {
 								$result = get_post_meta($id, 'custom_text_field_values', true);
 								$show   = isset($result['wholesale_price']) ? $result['wholesale_price'] : '';
-								echo '<div class="product-meta">Wholesale Price: ' . $show . '</div>';
+								echo '<div class="product-meta">Wholesale Price: ' . esc_url($show) . '</div>';
 							}
 						}
 					}
@@ -638,25 +669,25 @@ class Wholesale_market_Admin {
 	
 	
 	/**
-	 * display_wholesale_price_in_single_product_page
-	 * renders whole sale price at every simple product at single product page
+	 * Display_wholesale_price_in_single_product_page
+	 * Renders whole sale price at every simple product at single product page
 	 *
 	 * @return void
 	*/
-	function display_wholesale_price_in_single_product_page() {
+	public function display_wholesale_price_in_single_product_page() {
 		$get_i_radio_min_qty = get_option('i_radio_min_qty');
 		$_get_radio_price    = get_option('g_radio_dislpay_price_to');
 		
-		if ($get_i_radio_min_qty == 'yes' && $_get_radio_price == 'yes') {
+		if ('yes' == $get_i_radio_min_qty && 'yes' == $_get_radio_price) {
 			global $product;
 			$id    = $product->get_id();
 			$items = $product->get_type();
 
 			if ( is_user_logged_in() ) {
-				if ( $items == 'simple') {
+				if ( 'simple' == $items ) {
 					$result = get_post_meta($id, 'custom_text_field_values', true);
 					$show   = isset($result['wholesale_price']) ? $result['wholesale_price'] : '';
-					echo '<div class="product-meta">Wholesale Price: ' . $show . '</div>';
+					echo '<div class="product-meta">Wholesale Price: ' . esc_url($show) . '</div>';
 				}
 			}
 		} else {
@@ -666,16 +697,16 @@ class Wholesale_market_Admin {
 
 			foreach ($roles as $value) {
 				if ( is_user_logged_in() ) { 		// check if there is a logged in user 
-					if ( $_get_radio_price == 'no' ) {
-						if ( $value == 'wholeseller') {
+					if ( 'no' == $_get_radio_price ) {
+						if ('wholeseller' == $value ) {
 							global $product;
 							$id    = $product->get_id();
 							$items = $product->get_type();
 
-							if ( $items == 'simple') {
+							if ('simple' == $items) {
 								$result = get_post_meta($id, 'custom_text_field_values', true);
 								$show   = isset($result['wholesale_price']) ? $result['wholesale_price'] : '';
-								echo '<div class="product-meta">Wholesale Price: ' . $show . '</div>';
+								echo '<div class="product-meta">Wholesale Price: ' . esc_url($show) . '</div>';
 							}
 						}
 					}
@@ -686,39 +717,39 @@ class Wholesale_market_Admin {
 
 	
 	/**
-	 * display_wholesale_price_in_shop_page_variable_product
-	 * renders whole sale price at every variable product at shop page
+	 * Display_wholesale_price_in_shop_page_variable_product
+	 * Renders whole sale price at every variable product at shop page
 	 *
 	 * @param  mixed $description
 	 * @param  mixed $product
 	 * @param  mixed $variation
 	 * @return void
 	*/
-	function display_wholesale_price_in_shop_page_variable_product( $description, $product, $variation) {
+	public function display_wholesale_price_in_shop_page_variable_product( $description, $product, $variation) {
 		$user_id                        = get_current_user_id();
 		$get_g_checkbox_wholesale_price = get_option('g_checkbox_wholesale_price', false);
 		
-		if ($get_g_checkbox_wholesale_price == 'yes') {
+		if ('yes' == $get_g_checkbox_wholesale_price) {
 			$_get_radio_price = get_option('g_radio_dislpay_price_to');
-			if ($_get_radio_price == 'no') {
+			if ('no' == $_get_radio_price ) {
 				$user = wp_get_current_user();
 				if ( in_array( 'wholeseller', (array) $user->roles ) ) {
 					if (is_user_logged_in()) {
 						global $product;
 						$id           = $product->get_id();
 						$product_type = $product->get_type();
-						if ($product_type == 'variable') {
+						if ('variable' == $product_type ) {
 							$description['price_html'] = '<div style="color:red";>Wholesale Price:-' . get_post_meta($description['variation_id'], 'custom_field_wholesale_in_variation', true);
 						}
 					}
 				}
 			} else {
 				$_get_radio_price = get_option('g_radio_dislpay_price_to');
-				if ($_get_radio_price == 'yes') {
+				if ('yes' == $_get_radio_price ) {
 					global $product;
 					$id  = $product->get_id();
 					$res = $product->get_type();
-					if ($res == 'variable') {
+					if ('variable' == $res ) {
 						$description['price_html'] = '<div style="color:green" >Wholesale Price:-' . get_post_meta($description['variation_id'], 'custom_field_wholesale_in_variation', true);
 					}
 				}
@@ -823,23 +854,22 @@ class Wholesale_market_Admin {
 	
 
 	/**
-	 * min_qty_setting_is_achieved
+	 * Min_qty_setting_is_achieved
 	 * condition to renders whole sale price at the cart page at product level and for all product
 	 * ONLY for simple product 
 	 *
 	 * @param  mixed $cart_data
 	 * @return void
 	*/
-	public function min_qty_setting_is_achieved( $cart_data ) 
-	{
+	public function min_qty_setting_is_achieved( $cart_data ) { 
 		foreach ($cart_data->get_cart() as $cart => $data) {
 			$prod_type = $data['data']->get_type();
 
 			$get_minimum_qty_checkbox = get_option('i_checkbox_minimum_qty');
 			$get_min_qty_radio        = get_option('i_radio_min_qty');
 
-			if ($prod_type == 'simple') {	
-				if ($get_minimum_qty_checkbox=='yes' && $get_min_qty_radio=='no') {
+			if ('simple' == $prod_type ) {	
+				if ( 'yes' == $get_minimum_qty_checkbox && 'no' == $get_min_qty_radio ) {
 					$cart_quantity = $data['quantity'];
 					$product_id    = $data['product_id'];
 					
@@ -864,8 +894,8 @@ class Wholesale_market_Admin {
 					}
 				}
 			
-			} elseif ($prod_type=='variation') {
-				if ($get_minimum_qty_checkbox=='yes' && $get_min_qty_radio=='no') {
+			} elseif ('variation' == $prod_type) {
+				if ('yes' == $get_minimum_qty_checkbox && 'no' == $get_min_qty_radio) {
 					$cart_quantity = $data['quantity'];
 					$product_id    = $data['variation_id'];
 					
